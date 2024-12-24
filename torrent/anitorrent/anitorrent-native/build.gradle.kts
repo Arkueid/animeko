@@ -200,7 +200,7 @@ val copyNativeFiles by tasks.registering {
     dependsOn(buildAnitorrent)
     group = "anitorrent"
     description = "Copy anitrorent native files and dependencies to build/native-files"
-
+    
     val cmakeCache = anitorrentBuildDir.resolve("CMakeCache.txt")
     if (cmakeCache.exists()) {
         inputs.file(cmakeCache)
@@ -208,14 +208,15 @@ val copyNativeFiles by tasks.registering {
 
     val targetDir = layout.buildDirectory.dir("native-files")
     outputs.dir(targetDir)
-
+    
     val buildType = getPropertyOrNull("CMAKE_BUILD_TYPE") ?: "Debug"
     inputs.property("buildType", buildType)
-
+    
     val anitorrentBuildDir = anitorrentBuildDir
 
     val os = getOs()
     inputs.property("os", os)
+
     doLast {
         fun getAnitorrentNativeFiles(): List<File> {
             return buildList {
@@ -272,8 +273,8 @@ val copyNativeFiles by tasks.registering {
                 // LIB_EAY_RELEASE:FILEPATH=C:/vcpkg/installed/x64-windows/lib/libcrypto.lib
                 // SSL_EAY_RELEASE:FILEPATH=C:/vcpkg/installed/x64-windows/lib/libssl.lib
                 fun findDll(libFile: File): List<File> {
-                    val matched = libFile.parentFile.parentFile.resolve("bin")
-                        .listFiles().orEmpty()
+                    val matched = libFile.parentFile?.parentFile?.resolve("bin")
+                        ?.listFiles().orEmpty()
                         .filter { it.extension == "dll" && it.nameWithoutExtension.startsWith(libFile.nameWithoutExtension) }
                     return matched
                 }
